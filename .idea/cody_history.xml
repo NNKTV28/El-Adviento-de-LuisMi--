@@ -26,6 +26,29 @@
             </llm>
           </defaultLlm>
         </AccountData>
+        <AccountData>
+          <accountId value="VXNlcjo2NzU0NzQ=" />
+          <defaultLlm>
+            <llm>
+              <model value="anthropic::2024-10-22::claude-3-5-sonnet-latest" />
+              <provider value="anthropic" />
+              <tags>
+                <list>
+                  <option value="free" />
+                  <option value="vision" />
+                  <option value="power" />
+                </list>
+              </tags>
+              <title value="Claude 3.5 Sonnet (New)" />
+              <usage>
+                <list>
+                  <option value="edit" />
+                  <option value="chat" />
+                </list>
+              </usage>
+            </llm>
+          </defaultLlm>
+        </AccountData>
       </list>
     </accountData>
   </component>

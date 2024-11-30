@@ -2,40 +2,39 @@ package com.example.luismixmascalendar
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import android.widget.Button
-import android.widget.ImageView
 import android.widget.TextView
+import android.widget.VideoView
 import androidx.activity.ComponentActivity
 
+@Suppress("DEPRECATION")
 class DayViewActivity : ComponentActivity() {
-    private val youtubeUrls = mapOf(
-        1 to "https://youtu.be/KIiVMXaiWpY?si=y7Wsz-4zcR4u6nUV&t=12",
-        2 to "https://youtu.be/RrEyr4otoUU?si=v9QG9qiTbKMUvVgJ&t=10",
-        3 to "https://youtu.be/UXklIngt5gs?si=QVugr9pZTWVNaP8K&t=24",
-        4 to "https://youtu.be/J0qbS8HeAIQ?si=lrgOXkE_ONKiHIWz",
-        5 to "https://youtu.be/9GZL_Un8RI4?si=xYbOzlGeCQXB11bA&t=11",
-        6 to "https://youtu.be/ObIH2jBhK6w?si=YhWNE9HcOBUvgyaw&t=12",
-        7 to "https://youtu.be/bhjqRmMaI1g?si=zhmlTuEuF7OrNJ3W&t=11",
-        8 to "https://youtu.be/Iz-eQlk-vb8?si=BjebgqpWhlnU1Ho5&t=87",
-        9 to "https://youtu.be/NK7x-1-MdmE?si=caig7N2YbpfZy3yr&t=14",
-        10 to "https://youtu.be/ksoI-1X9sr4?si=LHv-MhScfjVGmeaA&t=73",
-        11 to "https://youtu.be/q7F83UQXf-Q?si=BUgvBa8GU8Z2uU8j&t=18",
-        12 to "https://youtu.be/jqY7fXl3HBI?si=MirO0la-A4IVF1a3",
-        13 to "https://youtu.be/UejnB9xCAAM?si=4sf0nfVo0wb-F-k7",
-        14 to "https://youtu.be/TnEpZqlTSgw?si=nlzZpnCKyNkaOY1M&t=12",
-        15 to "https://youtu.be/QQG2X9tdVzo?si=xXIbZg3nDt2AxrlG",
-        16 to "https://youtu.be/wOjzo02Tmck?si=ou8JwVP4zCwejm_j&t=24",
-        17 to "https://youtu.be/mHw71VcYRBQ?si=3UcDqhkKkqrtHAHi&t=13",
-        18 to "https://youtu.be/12_eYjSP5G8?si=rgtYpp2tBknwNvy9&t=30",
-        19 to "https://youtu.be/UuGrc3vvdMw?si=erOSWyh4DL-gWnYV",
-        20 to "https://youtu.be/0Y2hRtUrR-I?si=fMw5bOeWhdkVlIPM",
-        21 to "https://youtu.be/64II_Ge_Fgk?si=ggRgExRvA5vhhOhp&t=7",
-        22 to "https://youtu.be/cqab6q40Vjw?si=6oYgQje93sQsaYnu&t=3",
-        23 to "https://youtu.be/01Nh53Xt1s4?si=y7Ms6ghkpgKkl4FK&t=22",
-        24 to "https://youtu.be/5xkJR2pyxTc?si=HtzKKFsp25-xGjEQ&t=16",
-        25 to "https://youtu.be/cqab6q40Vjw?si=6oYgQje93sQsaYnu&t=3"
+    private val videoPaths = mapOf(
+        1 to R.raw.video_day_1,
+        2 to R.raw.video_day_2,
+        3 to R.raw.video_day_3,
+        4 to R.raw.video_day_4,
+        5 to R.raw.video_day_5,
+        6 to R.raw.video_day_6,
+        7 to R.raw.video_day_7,
+        8 to R.raw.video_day_8,
+        9 to R.raw.video_day_9,
+        10 to R.raw.video_day_10,
+        11 to R.raw.video_day_11,
+        12 to R.raw.video_day_12,
+        13 to R.raw.video_day_13,
+        14 to R.raw.video_day_14,
+        15 to R.raw.video_day_15,
+        16 to R.raw.video_day_16,
+        17 to R.raw.video_day_17,
+        18 to R.raw.video_day_18,
+        19 to R.raw.video_day_19,
+        20 to R.raw.video_day_20,
+        21 to R.raw.video_day_21,
+        22 to R.raw.video_day_22,
+        23 to R.raw.video_day_23,
+        24 to R.raw.video_day_24,
+        25 to R.raw.video_day_25
     )
 
     private val songTitles = mapOf(
@@ -72,34 +71,26 @@ class DayViewActivity : ComponentActivity() {
         25 to "Día de alegría y felicidad!"
     )
 
-    @SuppressLint("SetJavaScriptEnabled")
+    @SuppressLint("SetJavaScriptEnabled", "SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.day_view)
 
         val day = intent.getIntExtra("day", 1)
+        val videoView: VideoView = findViewById(R.id.videoView)
 
-        val webView = WebView(this)
-        webView.settings.javaScriptEnabled = true
-        webView.webViewClient = WebViewClient()
-
-        youtubeUrls[day]?.let { url ->
-            val videoId = url.split("youtu.be/")[1].split("?")[0]
-            val embedUrl = "https://www.youtube.com/embed/$videoId"
-            webView.loadUrl(embedUrl)
+        val videoPath = videoPaths[day]
+        if (videoPath != null) {
+            val uri = "android.resource://${packageName}/${videoPath}"
+            videoView.setVideoPath(uri)
+            videoView.start()
         }
 
         findViewById<Button>(R.id.backButton).setOnClickListener {
             finish()
         }
 
-        val imageView = findViewById<ImageView>(R.id.dayImage)
-        val imageResId = resources.getIdentifier("day$day", "drawable", packageName)
-        if (imageResId != 0) {
-            imageView.setImageResource(imageResId)
-        }
-
-        val dayText = findViewById<TextView>(R.id.dayText)
+        val dayText: TextView = findViewById(R.id.dayText)
         dayText.text = "Dia $day: ${songTitles[day]}"
     }
 }

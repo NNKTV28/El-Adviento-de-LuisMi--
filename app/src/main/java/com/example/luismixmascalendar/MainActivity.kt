@@ -23,6 +23,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
 
+        // Initialize and play random background sound
+        val soundResources = arrayOf(R.raw.bells_1, R.raw.bells_2)
+        val randomSound = soundResources.random()
+        mediaPlayer = MediaPlayer.create(this, randomSound)
+        mediaPlayer?.isLooping = true
+        mediaPlayer?.start()
+
         db = openOrCreateDatabase("admin.db", MODE_PRIVATE, null)
         db.execSQL("CREATE TABLE IF NOT EXISTS opened_days (day INTEGER PRIMARY KEY)")
 
@@ -44,6 +51,7 @@ class MainActivity : ComponentActivity() {
             christmasImageView.scaleType = ImageView.ScaleType.CENTER_INSIDE
             christmasImageView.foreground = getDrawable(R.drawable.green_border)
             christmasImageView.setOnClickListener {
+                mediaPlayer?.stop()
                 openDay(25)
             }
         } else {
@@ -59,7 +67,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @SuppressLint("SetTextI18")
+    @SuppressLint("SetTextI18", "DiscouragedApi")
     private fun setupImageView(imageView: ImageView, day: Int) {
         val imageResId = resources.getIdentifier("day_${day}", "raw", packageName)
         imageView.setImageResource(imageResId)
@@ -80,6 +88,7 @@ class MainActivity : ComponentActivity() {
             val currentDay = if (testing) testingDay else calendar.get(Calendar.DAY_OF_MONTH)
 
             if (testing || (currentMonth == Calendar.DECEMBER && day <= currentDay)) {
+                mediaPlayer?.stop()
                 openDay(day)
                 imageView.foreground = getDrawable(R.drawable.green_border)
             } else {
@@ -89,12 +98,8 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun openDay(day: Int) {
-        val intent = if (day == 25) {
-            Intent(this, DayViewActivity::class.java)
-
-        } else {
-            Intent(this, DayViewActivity::class.java)
-        }
+        // The if statement was redundant, as both branches did the same thing
+        val intent = Intent(this, DayViewActivity::class.java)
         intent.putExtra("day", day)
         startActivity(intent)
 
