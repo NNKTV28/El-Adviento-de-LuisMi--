@@ -48,7 +48,7 @@ LuismiXmasCalendar is a festive Android application that combines the magic of C
 ## Requirements
 
 - Android SDK
-- Minimum Android version: [Specify version]
+- Minimum Android version: 24
 - Internet connection for YouTube video playback
 
 ## Testing Mode
