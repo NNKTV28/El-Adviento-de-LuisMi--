@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:startColor="#1B4D3E"
+                android:endColor="#0C231C"
+                android:angle="45"/>
+            <size
+                android:width="1080dp"
+                android:height="1920dp"/>
+        </shape>
+    </item>
+    <item>
+        <bitmap
+            android:src="@drawable/snowflake"
+            android:tileMode="repeat"/>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:startColor="#CC2C3E50"
+                android:endColor="#00000000"
+                android:centerY="0.6"
+                android:type="radial"
+                android:gradientRadius="500dp"/>
+        </shape>
+    </item>
+    <item android:top="0dp" android:left="-100dp">
+        <shape android:shape="rectangle">
+            <gradient
+                android:startColor="#88C0392B"
+                android:endColor="#00000000"
+                android:type="radial"
+                android:gradientRadius="300dp"/>
+        </shape>
+    </item>
+</layer-list>

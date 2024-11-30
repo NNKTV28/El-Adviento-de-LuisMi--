@@ -8,13 +8,14 @@ import androidx.activity.ComponentActivity
 import android.database.sqlite.SQLiteDatabase
 import android.content.ContentValues
 import android.content.Intent
+import android.view.View
 import java.util.*
 
 class MainActivity : ComponentActivity() {
     private lateinit var db: SQLiteDatabase
     private var mediaPlayer: MediaPlayer? = null
     private val testing = true
-    private val testing_day = 3 // Change this value to simulate different days
+    private val testingDay = 25 // Change this value to simulate different days
     private val imageViews = mutableListOf<ImageView>()
 
     @SuppressLint("SetTextI18", "DiscouragedApi")
@@ -27,11 +28,18 @@ class MainActivity : ComponentActivity() {
 
         val calendar = Calendar.getInstance()
         val currentMonth = calendar.get(Calendar.MONTH)
-        val currentDay = if (testing) testing_day else calendar.get(Calendar.DAY_OF_MONTH)
+        val currentDay = if (testing) testingDay else calendar.get(Calendar.DAY_OF_MONTH)
+
+        val christmasImageView = findViewById<ImageView>(R.id.imageView25)
 
         if (currentMonth == Calendar.DECEMBER && currentDay == 25) {
-            // Show single big Christmas image
-            val christmasImageView = findViewById<ImageView>(R.id.imageView1)
+            // Hide all other images and show Christmas image
+            for (i in 1..24) {
+                val imageViewId = resources.getIdentifier("imageView$i", "id", packageName)
+                val imageView = findViewById<ImageView>(imageViewId)
+                imageView.visibility = View.GONE
+            }
+            christmasImageView.visibility = View.VISIBLE
             christmasImageView.setImageResource(R.drawable.day_25)
             christmasImageView.scaleType = ImageView.ScaleType.CENTER_INSIDE
             christmasImageView.foreground = getDrawable(R.drawable.green_border)
@@ -40,10 +48,12 @@ class MainActivity : ComponentActivity() {
             }
         } else {
             // Show advent calendar
+            christmasImageView.visibility = View.GONE
             for (i in 1..24) {
                 val imageViewId = resources.getIdentifier("imageView$i", "id", packageName)
                 val imageView = findViewById<ImageView>(imageViewId)
                 imageViews.add(imageView)
+                imageView.visibility = View.VISIBLE
                 setupImageView(imageView, i)
             }
         }
@@ -67,7 +77,7 @@ class MainActivity : ComponentActivity() {
         imageView.setOnClickListener {
             val calendar = Calendar.getInstance()
             val currentMonth = calendar.get(Calendar.MONTH)
-            val currentDay = if (testing) testing_day else calendar.get(Calendar.DAY_OF_MONTH)
+            val currentDay = if (testing) testingDay else calendar.get(Calendar.DAY_OF_MONTH)
 
             if (testing || (currentMonth == Calendar.DECEMBER && day <= currentDay)) {
                 openDay(day)
@@ -80,7 +90,8 @@ class MainActivity : ComponentActivity() {
 
     private fun openDay(day: Int) {
         val intent = if (day == 25) {
-            Intent(this, ChristmasDayActivity::class.java)
+            Intent(this, DayViewActivity::class.java)
+
         } else {
             Intent(this, DayViewActivity::class.java)
         }
