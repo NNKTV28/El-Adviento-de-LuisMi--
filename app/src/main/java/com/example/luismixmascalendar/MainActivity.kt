@@ -14,8 +14,8 @@ import java.util.*
 class MainActivity : ComponentActivity() {
     private lateinit var db: SQLiteDatabase
     private var mediaPlayer: MediaPlayer? = null
-    private val testing = true
-    private val testingDay = 25 // Change this value to simulate different days
+    private val testing = true // Set to true for testing
+    private val testingDay = 1 // Change this value to simulate different days
     private val imageViews = mutableListOf<ImageView>()
 
     @SuppressLint("SetTextI18", "DiscouragedApi")
