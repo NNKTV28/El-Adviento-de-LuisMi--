@@ -67,9 +67,8 @@ Contributions are welcome! Please feel free to submit pull requests.
 
 ## Credits
 
-- Application developed by [Your Name/Team]
+- Application developed by NNKtv28
 - Songs by Luis Miguel
-- Special thanks to contributors and testers
 
 ## Contact
 
