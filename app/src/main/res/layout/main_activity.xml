@@ -28,17 +28,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp" />
-    <ImageView
-        android:id="@+id/imageView25"
-        android:layout_width="357dp"
-        android:layout_height="541dp"
-        android:visibility="gone"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintWidth_percent="0.23"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="134dp" />
+
     <ImageView
         android:id="@+id/imageView1"
         android:layout_width="0dp"
