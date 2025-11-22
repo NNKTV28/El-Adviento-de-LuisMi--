@@ -1,74 +1,115 @@
 package com.example.luismixmascalendar
 
 import android.annotation.SuppressLint
+import android.content.*
 import android.os.Bundle
-import android.widget.Button
-import android.widget.TextView
-import android.widget.VideoView
+import android.os.Handler
+import android.os.IBinder
+import android.os.Looper
+import android.widget.*
 import androidx.activity.ComponentActivity
 
 @Suppress("DEPRECATION")
 class DayViewActivity : ComponentActivity() {
-    private val videoPaths = mapOf(
-        1 to R.raw.video_day_1,
-        2 to R.raw.video_day_2,
-        3 to R.raw.video_day_3,
-        4 to R.raw.video_day_4,
-        5 to R.raw.video_day_5,
-        6 to R.raw.video_day_6,
-        7 to R.raw.video_day_7,
-        8 to R.raw.video_day_8,
-        9 to R.raw.video_day_9,
-        10 to R.raw.video_day_10,
-        11 to R.raw.video_day_11,
-        12 to R.raw.video_day_12,
-        13 to R.raw.video_day_13,
-        14 to R.raw.video_day_14,
-        15 to R.raw.video_day_15,
-        16 to R.raw.video_day_16,
-        17 to R.raw.video_day_17,
-        18 to R.raw.video_day_18,
-        19 to R.raw.video_day_19,
-        20 to R.raw.video_day_20,
-        21 to R.raw.video_day_21,
-        22 to R.raw.video_day_22,
-        23 to R.raw.video_day_23,
-        24 to R.raw.video_day_24,
-        25 to R.raw.video_day_25
-    )
+    private var musicService: MusicService? = null
+    private var serviceBound = false
+    private lateinit var playPauseButton: ImageButton
+    private lateinit var dayImageView: ImageView
+    private lateinit var dayText: TextView
+    private var currentDay = 1
+    private val handler = Handler(Looper.getMainLooper())
+    private val updateUIRunnable = object : Runnable {
+        override fun run() {
+            updatePlayPauseButton()
+            handler.postDelayed(this, 500) // Update every 500ms
+        }
+    }
+    
+    private val dayChangeReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == MusicService.ACTION_DAY_CHANGED) {
+                val newDay = intent.getIntExtra(MusicService.EXTRA_DAY, currentDay)
+                if (newDay != currentDay) {
+                    currentDay = newDay
+                    updateDayUI()
+                }
+            }
+        }
+    }
+    
+    private val serviceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            val binder = service as MusicService.MusicBinder
+            musicService = binder.getService()
+            serviceBound = true
+            
+            // Start playing the day's music
+            val day = intent.getIntExtra("day", 1)
+            musicService?.playDay(day)
+            
+            // Start updating UI
+            handler.post(updateUIRunnable)
+        }
 
+        override fun onServiceDisconnected(name: ComponentName?) {
+            serviceBound = false
+            musicService = null
+        }
+    }
+    
+    private val videoPaths = mapOf(
+        1 to R.raw.day_1,
+        2 to R.raw.day_2,
+        3 to R.raw.day_3,
+        4 to R.raw.day_4,
+        5 to R.raw.day_5,
+        6 to R.raw.day_6,
+        7 to R.raw.day_7,
+        8 to R.raw.day_8,
+        9 to R.raw.day_9,
+        10 to R.raw.day_10,
+        11 to R.raw.day_11,
+        12 to R.raw.day_12,
+        13 to R.raw.day_13,
+        14 to R.raw.day_14,
+        15 to R.raw.day_15,
+        16 to R.raw.day_16,
+        17 to R.raw.day_17,
+        18 to R.raw.day_18,
+        19 to R.raw.day_19,
+        20 to R.raw.day_20,
+        21 to R.raw.day_21,
+        22 to R.raw.day_22,
+        23 to R.raw.day_23,
+        24 to R.raw.day_24,
+        25 to R.raw.day_25
+    )
     private val songTitles = mapOf(
-        1 to "Diciembre está por llegar! Va a nevar!",
-        2 to "La ternura que hay en ti, me acariciará",
-        3 to "Nunca dejes de soñar...Sonríe!",
-        4 to "Yo te necesito!",
-        5 to "No me dejes nunca, aunque me hunda",
-        6 to "Hoy es San Nicolas! Y ya llegó a la ciudad!",
-        7 to "Voy a amarte tanto, como fuego entre tus brazos",
-        8 to "Hoy es noche de luna llena...y buen amor!!!",
-        9 to "Con la noche buena  \n" +
-                "llegará el amor.  \n" +
-                "Quiero estar contigo al menos  \n" +
-                "con el corazón",
-        10 to "Suave! Como siempre te soñé!",
-        11 to "Has elegido bien!",
-        12 to "Con el color del sol por todo el cuerpo",
-        13 to "Mi motivo mejor eres tú",
-        14 to "No más guerras No más vidas rotas",
-        15 to "Yo por ti me muero",
-        16 to "Tú, intensamente tú",
-        17 to "Amor! Nació de dios para los dos, nació del alma.",
-        18 to "La fiesta va a comenzar!",
-        19 to "Doy gracias la cielo por haberte conocido",
-        20 to "Sueña  \n" +
-                "con un mundo donde todos los días  \n" +
-                "el sol brillará",
-        21 to "Si todas las cosas traen recuerdos,  será porque llegó la Navidad",
-        22 to "Se acerca la noche buena",
-        23 to "La nostalgia vuelve al hogar, \n" +
-                "al llegar la blanca Navidad",
-        24 to "Feliz noche buena!",
-        25 to "Día de alegría y felicidad!"
+        1 to "Va a Nevar",
+        2 to "Frente a La Chimenea",
+        3 to "Sonríe",
+        4 to "Amor A Mares",
+        5 to "Te propongo esta noche",
+        6 to "Santa Claus Llegó A La Ciudad",
+        7 to "Dame",
+        8 to "Más",
+        9 to "Estaré En Mi Casa Esta Navidad",
+        10 to "Suave",
+        11 to "Un Hombre Busca a Una Mujer",
+        12 to "Cómo Es Posible Que a Mi Lado",
+        13 to "Motivos",
+        14 to "Mi Humilde Oración",
+        15 to "Serenata Huasteca",
+        16 to "Amarte es un placer",
+        17 to "Amor, Amor, Amor",
+        18 to "La Fiesta Del Mariachi",
+        19 to "Contigo En La Distancia",
+        20 to "Sueña",
+        21 to "Llegó La Navidad",
+        22 to "Te Deseo Muy Felices Fiestas",
+        23 to "Blanca Navidad",
+        24 to "Noche De Paz",
+        25 to "Navidad, Navidad"
     )
 
     @SuppressLint("SetJavaScriptEnabled", "SetTextI18n")
@@ -76,21 +117,104 @@ class DayViewActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.day_view)
 
-        val day = intent.getIntExtra("day", 1)
-        val videoView: VideoView = findViewById(R.id.videoView)
+        // Bind to music service
+        val serviceIntent = Intent(this, MusicService::class.java)
+        bindService(serviceIntent, serviceConnection, BIND_AUTO_CREATE)
 
-        val videoPath = videoPaths[day]
-        if (videoPath != null) {
-            val uri = "android.resource://${packageName}/${videoPath}"
-            videoView.setVideoPath(uri)
-            videoView.start()
-        }
+        currentDay = intent.getIntExtra("day", 1)
+        
+        // Get UI references
+        dayImageView = findViewById(R.id.dayImageView)
+        dayText = findViewById(R.id.dayText)
+        
+        // Display initial day
+        updateDayUI()
+        
+        // Register broadcast receiver for day changes
+        val filter = IntentFilter(MusicService.ACTION_DAY_CHANGED)
+        registerReceiver(dayChangeReceiver, filter)
 
         findViewById<Button>(R.id.backButton).setOnClickListener {
+            // Stop music and service when going back
+            musicService?.let {
+                val stopIntent = Intent(this, MusicService::class.java)
+                stopIntent.action = MusicService.ACTION_STOP
+                startService(stopIntent)
+            }
             finish()
         }
 
-        val dayText: TextView = findViewById(R.id.dayText)
-        dayText.text = "Dia $day: ${songTitles[day]}"
+        // Setup media controls
+        setupMediaControls()
+    }
+    
+    private fun updateDayUI() {
+        // Update image
+        val imageResId = resources.getIdentifier("day_${currentDay}", "drawable", packageName)
+        if (imageResId != 0) {
+            dayImageView.setImageResource(imageResId)
+        }
+        
+        // Update text
+        dayText.text = "Dia $currentDay: ${songTitles[currentDay]}"
+    }
+    
+    private fun setupMediaControls() {
+        playPauseButton = findViewById(R.id.playPauseButton)
+        val nextButton: ImageButton = findViewById(R.id.nextButton)
+        
+        playPauseButton.setOnClickListener {
+            val service = musicService
+            android.util.Log.d("DayViewActivity", "Play/Pause button clicked")
+            if (service != null) {
+                val intent = Intent(this, MusicService::class.java)
+                val isPlaying = service.isPlaying()
+                android.util.Log.d("DayViewActivity", "Music is playing: $isPlaying")
+                if (isPlaying) {
+                    // Pause music
+                    intent.action = MusicService.ACTION_PAUSE
+                    android.util.Log.d("DayViewActivity", "Paused music")
+                } else {
+                    // Play music
+                    intent.action = MusicService.ACTION_PLAY
+                    android.util.Log.d("DayViewActivity", "Playing music")
+                }
+                startService(intent)
+                // Update button after a short delay
+                handler.postDelayed({
+                    updatePlayPauseButton()
+                }, 200)
+            } else {
+                android.util.Log.e("DayViewActivity", "Service is null!")
+            }
+        }
+        
+        nextButton.setOnClickListener {
+            if (musicService != null) {
+                val intent = Intent(this, MusicService::class.java)
+                intent.action = MusicService.ACTION_NEXT
+                startService(intent)
+            }
+        }
+    }
+    
+    private fun updatePlayPauseButton() {
+        musicService?.let { service ->
+            if (service.isPlaying()) {
+                playPauseButton.setImageResource(android.R.drawable.ic_media_pause)
+            } else {
+                playPauseButton.setImageResource(android.R.drawable.ic_media_play)
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        handler.removeCallbacks(updateUIRunnable)
+        unregisterReceiver(dayChangeReceiver)
+        if (serviceBound) {
+            unbindService(serviceConnection)
+            serviceBound = false
+        }
     }
 }
