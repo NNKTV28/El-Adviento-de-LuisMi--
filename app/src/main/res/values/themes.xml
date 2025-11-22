@@ -2,9 +2,4 @@
 <resources>
 
     <style name="Theme.LuismiXmasCalendar" parent="android:Theme.Material.Light.NoActionBar" />
-    
-    <style name="NumberPickerStyle">
-        <item name="android:textColor">#FFFFFF</item>
-        <item name="android:textSize">20sp</item>
-    </style>
 </resources>

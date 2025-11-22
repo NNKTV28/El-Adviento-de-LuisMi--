@@ -12,8 +12,6 @@ import java.util.*
 
 class MainActivity : ComponentActivity() {
     private lateinit var db: SQLiteDatabase
-    private var testing = false // Testing mode
-    private var testingDay = 25 // Current day for testing
     private val imageViews = mutableListOf<ImageView>()
     @SuppressLint("SetTextI18", "DiscouragedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,9 +20,6 @@ class MainActivity : ComponentActivity() {
 
         db = openOrCreateDatabase("admin.db", MODE_PRIVATE, null)
         db.execSQL("CREATE TABLE IF NOT EXISTS opened_days (day INTEGER PRIMARY KEY)")
-
-        // Setup testing mode UI
-        setupTestingMode()
 
         // Show advent calendar for days 1-24
         for (i in 1..24) {
@@ -37,28 +32,6 @@ class MainActivity : ComponentActivity() {
         // Setup day 25 special square
         val imageView25 = findViewById<ImageView>(R.id.imageView25)
         setupImageView(imageView25, 25)
-    }
-
-    private fun setupTestingMode() {
-        val testModeSwitch = findViewById<Switch>(R.id.testModeSwitch)
-        val testDayPicker = findViewById<NumberPicker>(R.id.testDayPicker)
-        val testingLayout = findViewById<LinearLayout>(R.id.testingLayout)
-        
-        // Setup number picker
-        testDayPicker.minValue = 1
-        testDayPicker.maxValue = 25
-        testDayPicker.value = testingDay
-        testDayPicker.wrapSelectorWheel = false
-        
-        testDayPicker.setOnValueChangedListener { _, _, newVal ->
-            testingDay = newVal
-        }
-        
-        testModeSwitch.setOnCheckedChangeListener { _, isChecked ->
-            testing = isChecked
-            testingLayout.visibility = if (isChecked) View.VISIBLE else View.GONE
-            Toast.makeText(this, if (isChecked) "Modo de prueba activado" else "Modo de prueba desactivado", Toast.LENGTH_SHORT).show()
-        }
     }
     @SuppressLint("SetTextI18", "DiscouragedApi")
     private fun setupImageView(imageView: ImageView, day: Int) {
@@ -78,15 +51,9 @@ class MainActivity : ComponentActivity() {
         imageView.setOnClickListener {
             val calendar = Calendar.getInstance()
             val currentMonth = calendar.get(Calendar.MONTH)
-            val currentDay = if (testing) testingDay else calendar.get(Calendar.DAY_OF_MONTH)
+            val currentDay = calendar.get(Calendar.DAY_OF_MONTH)
 
-            val canOpen = if (testing) {
-                day <= testingDay
-            } else {
-                currentMonth == Calendar.DECEMBER && day <= currentDay
-            }
-
-            if (canOpen) {
+            if (currentMonth == Calendar.DECEMBER && day <= currentDay) {
                 openDay(day)
                 imageView.foreground = getDrawable(R.drawable.green_border)
             } else {
