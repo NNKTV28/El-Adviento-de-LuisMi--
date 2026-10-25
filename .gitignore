@@ -1,0 +1,14 @@
+*.iml
+.gradle/
+.kotlin/
+.idea/
+build/
+local.properties
+.DS_Store
+captures/
+tools/.download_tmp/
+iosApp/iosApp.xcodeproj/xcuserdata/
+iosApp/iosApp.xcodeproj/project.xcworkspace/xcuserdata/
+
+# Copyrighted audio and covers: generate them with tools/download_songs.py
+composeApp/src/commonMain/composeResources/files/songs/

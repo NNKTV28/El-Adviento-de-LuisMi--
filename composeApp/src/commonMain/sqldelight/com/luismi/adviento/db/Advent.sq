@@ -1,0 +1,30 @@
+-- One row per calendar door that has been opened.
+CREATE TABLE opened_day (
+    day INTEGER NOT NULL PRIMARY KEY,
+    opened_at INTEGER NOT NULL,
+    play_count INTEGER NOT NULL DEFAULT 0
+);
+
+-- Simple key/value store for user settings (test mode, notifications...).
+CREATE TABLE setting (
+    key TEXT NOT NULL PRIMARY KEY,
+    setting_value TEXT NOT NULL
+);
+
+selectOpened:
+SELECT * FROM opened_day ORDER BY day;
+
+markOpened:
+INSERT OR IGNORE INTO opened_day(day, opened_at, play_count) VALUES (?, ?, 0);
+
+incrementPlayCount:
+UPDATE opened_day SET play_count = play_count + 1 WHERE day = ?;
+
+deleteAllOpened:
+DELETE FROM opened_day;
+
+selectSettings:
+SELECT * FROM setting;
+
+putSetting:
+INSERT OR REPLACE INTO setting(key, setting_value) VALUES (?, ?);
