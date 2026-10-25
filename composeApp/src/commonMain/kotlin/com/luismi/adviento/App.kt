@@ -119,7 +119,7 @@ fun App(services: PlatformServices, navigator: AppNavigator = remember { AppNavi
                                     songs = songs,
                                     opened = opened,
                                     unlockedDay = unlockedDay,
-                                    testMode = current.testMode,
+                                    testMode = BuildFlags.TEST_MODE_AVAILABLE && current.testMode,
                                     pagerState = pagerState,
                                     onOpenDay = { day ->
                                         scope.launch { store.markOpened(day) }

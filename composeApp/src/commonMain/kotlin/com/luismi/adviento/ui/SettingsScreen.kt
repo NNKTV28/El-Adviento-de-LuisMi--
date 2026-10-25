@@ -44,6 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.luismi.adviento.BuildFlags
 import com.luismi.adviento.data.LAST_DAY
 import com.luismi.adviento.data.Settings
 import com.luismi.adviento.i18n.Language
@@ -91,13 +92,15 @@ fun SettingsScreen(
                     gapSize = 0.dp,
                     drawStopIndicator = {},
                 )
-                Spacer(Modifier.height(16.dp))
-                OutlinedButton(
-                    onClick = { confirmReset = true },
-                    enabled = openedCount > 0,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text(strings.resetDays, color = if (openedCount > 0) AdventColors.Red else AdventColors.Muted)
+                if (BuildFlags.TEST_MODE_AVAILABLE) {
+                    Spacer(Modifier.height(16.dp))
+                    OutlinedButton(
+                        onClick = { confirmReset = true },
+                        enabled = openedCount > 0,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text(strings.resetDays, color = if (openedCount > 0) AdventColors.Red else AdventColors.Muted)
+                    }
                 }
             }
 
@@ -141,49 +144,51 @@ fun SettingsScreen(
                 }
             }
 
-            Section(strings.testMode, badge = settings.testMode) {
-                SwitchRow(
-                    title = strings.enableTestMode,
-                    subtitle = strings.enableTestModeHint,
-                    checked = settings.testMode,
-                    onCheckedChange = onTestModeChange,
-                )
-                if (settings.testMode) {
-                    Divider()
-                    var sliderValue by remember(settings.simulatedDay) { mutableFloatStateOf(settings.simulatedDay.toFloat()) }
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(strings.simulatedDay, color = AdventColors.Cream, fontSize = 15.sp, modifier = Modifier.weight(1f))
+            if (BuildFlags.TEST_MODE_AVAILABLE) {
+                Section(strings.testMode, badge = settings.testMode) {
+                    SwitchRow(
+                        title = strings.enableTestMode,
+                        subtitle = strings.enableTestModeHint,
+                        checked = settings.testMode,
+                        onCheckedChange = onTestModeChange,
+                    )
+                    if (settings.testMode) {
+                        Divider()
+                        var sliderValue by remember(settings.simulatedDay) { mutableFloatStateOf(settings.simulatedDay.toFloat()) }
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(strings.simulatedDay, color = AdventColors.Cream, fontSize = 15.sp, modifier = Modifier.weight(1f))
+                            Text(
+                                if (sliderValue.toInt() == 0) strings.noDay else strings.simulatedDayValue(sliderValue.toInt()),
+                                color = AdventColors.Gold,
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.Medium,
+                            )
+                        }
+                        Slider(
+                            value = sliderValue,
+                            onValueChange = { sliderValue = it },
+                            onValueChangeFinished = { onSimulatedDayChange(sliderValue.toInt()) },
+                            valueRange = 0f..LAST_DAY.toFloat(),
+                            steps = LAST_DAY - 1,
+                            colors = SliderDefaults.colors(
+                                thumbColor = AdventColors.Gold,
+                                activeTrackColor = AdventColors.Gold,
+                                inactiveTrackColor = AdventColors.SurfaceHigh,
+                                activeTickColor = AdventColors.Background.copy(alpha = 0.4f),
+                                inactiveTickColor = AdventColors.Muted.copy(alpha = 0.4f),
+                            ),
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        OutlinedButton(onClick = onSendTestNotification, modifier = Modifier.fillMaxWidth()) {
+                            Text(strings.sendTestNotification, color = AdventColors.Cream)
+                        }
+                        Spacer(Modifier.height(10.dp))
                         Text(
-                            if (sliderValue.toInt() == 0) strings.noDay else strings.simulatedDayValue(sliderValue.toInt()),
-                            color = AdventColors.Gold,
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Medium,
+                            strings.realDate(realUnlockedDay),
+                            color = AdventColors.Muted,
+                            fontSize = 12.sp,
                         )
                     }
-                    Slider(
-                        value = sliderValue,
-                        onValueChange = { sliderValue = it },
-                        onValueChangeFinished = { onSimulatedDayChange(sliderValue.toInt()) },
-                        valueRange = 0f..LAST_DAY.toFloat(),
-                        steps = LAST_DAY - 1,
-                        colors = SliderDefaults.colors(
-                            thumbColor = AdventColors.Gold,
-                            activeTrackColor = AdventColors.Gold,
-                            inactiveTrackColor = AdventColors.SurfaceHigh,
-                            activeTickColor = AdventColors.Background.copy(alpha = 0.4f),
-                            inactiveTickColor = AdventColors.Muted.copy(alpha = 0.4f),
-                        ),
-                    )
-                    Spacer(Modifier.height(4.dp))
-                    OutlinedButton(onClick = onSendTestNotification, modifier = Modifier.fillMaxWidth()) {
-                        Text(strings.sendTestNotification, color = AdventColors.Cream)
-                    }
-                    Spacer(Modifier.height(10.dp))
-                    Text(
-                        strings.realDate(realUnlockedDay),
-                        color = AdventColors.Muted,
-                        fontSize = 12.sp,
-                    )
                 }
             }
 

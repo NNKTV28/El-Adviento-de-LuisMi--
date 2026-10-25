@@ -1,5 +1,6 @@
 package com.luismi.adviento.data
 
+import com.luismi.adviento.BuildFlags
 import com.luismi.adviento.i18n.Strings
 import com.luismi.adviento.platform.Reminder
 import kotlinx.datetime.LocalDate
@@ -27,7 +28,7 @@ object AdventClock {
     }
 
     fun unlockedDay(settings: Settings): Int =
-        if (settings.testMode) settings.simulatedDay.coerceIn(0, LAST_DAY) else realUnlockedDay()
+        if (BuildFlags.TEST_MODE_AVAILABLE && settings.testMode) settings.simulatedDay.coerceIn(0, LAST_DAY) else realUnlockedDay()
 
     /** Reminders for every door whose unlock moment (December N at [hour]:00) is still ahead. */
     fun upcomingReminders(hour: Int, strings: Strings): List<Reminder> {
