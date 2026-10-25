@@ -2,6 +2,8 @@
 
 An interactive Advent Calendar app featuring Luis Miguel's songs, now native on **Android and iOS**.
 
+Website and downloads: https://luismigueladviento.nikicoding.com
+
 ## Branches
 
 The 2026 rewrite replaces the old Android-only app. **`2026_prod_test_enabled` is the new main branch.**
@@ -97,5 +99,6 @@ Contributions are welcome! Please feel free to submit pull requests.
 
 - Email: nnktv28@gmail.com
 - Github: https://github.com/nnktv28
-- LinkedIn: https://www.linkedin.com/in/nikita-molina-arévalo/
-- Portfolio: https://nnktv28.github.io/
+- LinkedIn: https://www.linkedin.com/in/nikicoding/
+- Portfolio: https://nikicoding.com
+- Project website: https://luismigueladviento.nikicoding.com
