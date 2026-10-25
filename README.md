@@ -11,7 +11,7 @@ The 2026 rewrite replaces the old Android-only app. **`2026_prod_test_enabled` i
 | Branch | What it is |
 |---|---|
 | `2026_prod_test_enabled` | **Current version (default).** Kotlin Multiplatform app for Android and iOS, with the test mode available in Settings. |
-| `2026_prod` | Final 2026 release. It will be published here once the app is finished. |
+| `2026_prod` | Production release: the same app with the test mode stripped out (`adviento.testMode=false`). GitHub releases and store builds come from here. |
 | `master`, `2025_prod`, `2025_test_enabled` | Legacy 2025 version: Android only, YouTube-based. Kept for reference. |
 
 ## Description
@@ -81,6 +81,14 @@ Needs a Mac with Xcode 16 or newer.
 Open **Settings → Test mode** and turn it on:
 - **Simulated day**: pretend it is any day from December 1st to 25th.
 - **Send test notification**: posts a notification after 5 seconds.
+
+The test mode is controlled by the `adviento.testMode` Gradle property (`true` on `2026_prod_test_enabled`, `false` on `2026_prod`). To build without it from any branch:
+
+```
+./gradlew :composeApp:bundleRelease -Padviento.testMode=false
+```
+
+Release builds are signed when `ADVIENTO_STORE_FILE`, `ADVIENTO_STORE_PASSWORD`, `ADVIENTO_KEY_ALIAS` and `ADVIENTO_KEY_PASSWORD` are set in `~/.gradle/gradle.properties`; otherwise they are left unsigned.
 
 ## Contributing
 
