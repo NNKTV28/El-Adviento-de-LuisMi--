@@ -12,3 +12,6 @@ iosApp/iosApp.xcodeproj/project.xcworkspace/xcuserdata/
 
 # Copyrighted audio and covers: generate them with tools/download_songs.py
 composeApp/src/commonMain/composeResources/files/songs/
+
+# Local secrets
+.env
