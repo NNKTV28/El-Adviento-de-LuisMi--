@@ -103,12 +103,27 @@ android {
         applicationId = "com.luismi.adviento"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
+        // versionCode mirrors versionName: 2026.1.1 -> 2026_01_01
+        versionCode = 20260101
         versionName = "2026.1.1"
+    }
+    // Release keys live outside the repo, in ~/.gradle/gradle.properties (ADVIENTO_*).
+    // Without them the release build is left unsigned.
+    val releaseStoreFile = providers.gradleProperty("ADVIENTO_STORE_FILE").orNull
+    signingConfigs {
+        if (releaseStoreFile != null) {
+            create("release") {
+                storeFile = file(releaseStoreFile)
+                storePassword = providers.gradleProperty("ADVIENTO_STORE_PASSWORD").get()
+                keyAlias = providers.gradleProperty("ADVIENTO_KEY_ALIAS").get()
+                keyPassword = providers.gradleProperty("ADVIENTO_KEY_PASSWORD").get()
+            }
+        }
     }
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
+            if (releaseStoreFile != null) signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
