@@ -39,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -63,6 +64,7 @@ fun SettingsScreen(
     onResetOpened: () -> Unit,
 ) {
     val strings = LocalStrings.current
+    val uriHandler = LocalUriHandler.current
     var confirmReset by remember { mutableStateOf(false) }
 
     Column(Modifier.fillMaxSize()) {
@@ -185,13 +187,27 @@ fun SettingsScreen(
                 }
             }
 
-            Text(
-                strings.footer,
-                color = AdventColors.Muted.copy(alpha = 0.6f),
-                fontSize = 12.sp,
-                modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
-                textAlign = TextAlign.Center,
-            )
+            Column(
+                Modifier.fillMaxWidth().padding(vertical = 12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(
+                    strings.footer,
+                    color = AdventColors.Muted.copy(alpha = 0.6f),
+                    fontSize = 12.sp,
+                    textAlign = TextAlign.Center,
+                )
+                Text(
+                    strings.madeBy,
+                    color = AdventColors.Gold,
+                    fontSize = 12.sp,
+                    letterSpacing = 1.sp,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable { uriHandler.openUri("https://nikicoding.com") }
+                        .padding(horizontal = 8.dp, vertical = 6.dp),
+                )
+            }
         }
     }
 

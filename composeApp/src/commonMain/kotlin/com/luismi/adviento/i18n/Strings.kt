@@ -58,6 +58,7 @@ interface Strings {
     val testNotificationSent: String
     fun realDate(unlockedDay: Int): String
     val footer: String
+    val madeBy: String
 
     fun notificationTitle(day: Int): String
     fun notificationBody(day: Int): String
@@ -112,6 +113,7 @@ object SpanishStrings : Strings {
         if (unlockedDay == 0) "Fecha real: todavía no hay puertas disponibles"
         else "Fecha real: puertas disponibles hasta el día $unlockedDay"
     override val footer = "Hecho con cariño · El Sol de México"
+    override val madeBy = "Hecho por NikiCoding"
 
     override fun notificationTitle(day: Int) = if (day == 25) "¡Feliz Navidad!" else "Día $day de adviento"
     override fun notificationBody(day: Int) =
@@ -168,6 +170,7 @@ object EnglishStrings : Strings {
         if (unlockedDay == 0) "Real date: no doors available yet"
         else "Real date: doors available up to day $unlockedDay"
     override val footer = "Made with love · El Sol de México"
+    override val madeBy = "Made by NikiCoding"
 
     override fun notificationTitle(day: Int) = if (day == 25) "Merry Christmas!" else "Advent day $day"
     override fun notificationBody(day: Int) =
