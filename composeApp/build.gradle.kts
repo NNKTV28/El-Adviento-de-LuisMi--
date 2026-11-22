@@ -19,6 +19,8 @@ kotlin {
     listOf(
         iosArm64(),
         iosSimulatorArm64(),
+        // Simulator on Intel Macs (the neobook CI runner)
+        iosX64(),
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
@@ -50,6 +52,9 @@ kotlin {
         }
         iosMain.dependencies {
             implementation(libs.sqldelight.native.driver)
+        }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
         }
     }
 }

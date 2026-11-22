@@ -1,0 +1,72 @@
+# Builds and tests the iOS app on the self-hosted neobook runner (Intel MacBook).
+# No pull_request trigger on purpose: the repo is public and the runner is a personal Mac.
+name: iOS
+
+on:
+  push:
+    branches: [2026_prod_test_enabled, 2026_prod]
+  workflow_dispatch:
+
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ios:
+    runs-on: [self-hosted, macOS, X64, neobook]
+    timeout-minutes: 60
+    env:
+      SIM_DEVICE: adviento-ci-iphone
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK and songs
+        run: |
+          echo "JAVA_HOME=$(ls -d "$HOME"/.local/jdk/jdk-17*)/Contents/Home" >> "$GITHUB_ENV"
+          # The songs are copyrighted and not in git; the runner keeps a copy in ~/adviento-ci/songs
+          mkdir -p composeApp/src/commonMain/composeResources/files
+          cp -R "$HOME/adviento-ci/songs" composeApp/src/commonMain/composeResources/files/
+
+      - name: Unit tests (iOS simulator)
+        run: ./gradlew :composeApp:iosX64Test --no-daemon
+
+      - name: Build app for the simulator
+        run: |
+          xcodebuild -project iosApp/iosApp.xcodeproj -target iosApp \
+            -sdk iphonesimulator -arch x86_64 -configuration Debug \
+            SYMROOT="$PWD/build/ios" CODE_SIGNING_ALLOWED=NO build | tail -n 40
+          ls build/ios/Debug-iphonesimulator/*.app
+
+      - name: Launch in the simulator
+        run: |
+          RUNTIME=$(xcrun simctl list runtimes available -j | python3 -c 'import json,sys; r=[x for x in json.load(sys.stdin)["runtimes"] if x["platform"]=="iOS"]; print(r[-1]["identifier"])')
+          TYPE=$(xcrun simctl list devicetypes -j | python3 -c 'import json,sys; t=[x for x in json.load(sys.stdin)["devicetypes"] if x["name"].startswith("iPhone") and "Pro" not in x["name"] and "Plus" not in x["name"]]; print(t[-1]["identifier"])')
+          xcrun simctl delete "$SIM_DEVICE" 2>/dev/null || true
+          UDID=$(xcrun simctl create "$SIM_DEVICE" "$TYPE" "$RUNTIME")
+          echo "UDID=$UDID" >> "$GITHUB_ENV"
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID" -b
+          APP=$(ls -d build/ios/Debug-iphonesimulator/*.app | head -n 1)
+          xcrun simctl install "$UDID" "$APP"
+          xcrun simctl launch "$UDID" com.luismi.adviento
+          sleep 15
+          mkdir -p build/screens
+          xcrun simctl io "$UDID" screenshot build/screens/calendar.png
+          # Still running 15 s after launch = no crash on start
+          xcrun simctl spawn "$UDID" launchctl list | grep -q "com.luismi.adviento" \
+            || { echo "App is not running after launch"; exit 1; }
+          echo "App launched and is still running"
+
+      - name: Upload screenshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-simulator-screenshot
+          path: build/screens/
+          if-no-files-found: ignore
+
+      - name: Clean up simulator
+        if: always()
+        run: |
+          [ -n "$UDID" ] && xcrun simctl shutdown "$UDID" 2>/dev/null || true
+          [ -n "$UDID" ] && xcrun simctl delete "$UDID" 2>/dev/null || true
