@@ -108,9 +108,9 @@ android {
         applicationId = "com.luismi.adviento"
         minSdk = 26
         targetSdk = 36
-        // versionCode mirrors versionName: 2026.1.1 -> 2026_01_01
-        versionCode = 20260101
-        versionName = "2026.1.1"
+        // versionCode mirrors versionName: 2026.1.2 -> 2026_01_02
+        versionCode = 20260102
+        versionName = "2026.1.2"
     }
     // Release keys live outside the repo, in ~/.gradle/gradle.properties (ADVIENTO_*).
     // Without them the release build is left unsigned.
